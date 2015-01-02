@@ -2,6 +2,9 @@ This is a really rough diaspora federation test!
 You need at least two pods. The script will create a post  
 on pod A and try to reach it via pod B.
 
+The script can handle multiple diaspora pod's. Just add more to the `config.ini`
+
+
 Dependencies
 ------------
 
