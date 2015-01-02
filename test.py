@@ -20,6 +20,7 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 def sendAndVerifyPost(pod1, pod2):
+    foundPost = False
     local = diaspy.connection.Connection(
             pod = config[pod1]['scheme'] + '://' + pod1,
             username = config[pod1]['username'],
@@ -68,8 +69,13 @@ def sendAndVerifyPost(pod1, pod2):
     print("[" + pod2 + "] Search stream for new post..")
     for post in remoteStream:
         if "ping " + seed in str(post): # and str(post.author(key='id')) == str(localUser['id']):
-            print("- Found post")
+            foundPost = True
             break
+
+    if foundPost:
+        print("Post found!")
+    else:
+        print("Post not found!")
 
     localPost.delete()
     local.logout()
