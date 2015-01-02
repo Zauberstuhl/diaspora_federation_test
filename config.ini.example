@@ -1,3 +1,7 @@
+[global]
+  timeout = 30
+  aspect = Testing
+
 [example.org]
   scheme = https
   username = test

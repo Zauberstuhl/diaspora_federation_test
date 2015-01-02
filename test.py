@@ -35,7 +35,7 @@ for remotePod in config.sections():
     local.login()
     remote.login()
 
-    localAspect = diaspy.models.Aspect(local, name='Testing')
+    localAspect = diaspy.models.Aspect(local, name = config['global']['aspect'])
     localUser = diaspy.people.User(local,
             handle = config[remotePod]['username'] + "@" + remotePod,
             fetch='data')
@@ -46,7 +46,7 @@ for remotePod in config.sections():
         if '500' in str(e):
             sys.exit(2)
 
-    remoteAspect = diaspy.models.Aspect(remote, name='Testing')
+    remoteAspect = diaspy.models.Aspect(remote, name = config['global']['aspect'])
     remoteUser = diaspy.people.User(remote,
             handle = config[localPod]['username'] + "@" + localPod,
             fetch='data')
@@ -65,7 +65,8 @@ for remotePod in config.sections():
     localStream = diaspy.streams.Stream(local)
     localPost = localStream.post(text="ping " + seed, aspect_ids=str(localAspect.id))
 
-    sleep(15)
+    print("Wait " + config['global']['timeout'] + " seconds to synchronize..")
+    sleep(int(config['global']['timeout']))
 
     remoteStream.update()
     localStream.update()
