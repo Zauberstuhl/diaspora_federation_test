@@ -1,7 +1,9 @@
 [example.org]
+  scheme = https
   username = test
   password = secret
 
 [example2.org]
+  scheme = https
   username = test2
   password = secret
