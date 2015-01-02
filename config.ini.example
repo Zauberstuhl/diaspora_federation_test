@@ -1,0 +1,7 @@
+[example.org]
+  username = test
+  password = secret
+
+[example2.org]
+  username = test2
+  password = secret
