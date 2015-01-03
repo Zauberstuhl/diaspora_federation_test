@@ -21,7 +21,7 @@ localPod = sys.argv[1]
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-def sendAndVerifyPost(pod1, pod2):
+def sendAndVerifyPost(pod1, pod2, rowid=0):
     print("Starting with " + pod1 + " > " + pod2)
     foundPost = False
     local = diaspy.connection.Connection(
@@ -84,20 +84,26 @@ def sendAndVerifyPost(pod1, pod2):
         print("Post not found!")
 
     with sqlite3.connect(config['global']['database']) as con:
-        con.execute("INSERT INTO federation VALUES (?, ?, ?)",
-                [pod1, pod2, foundPost])
+        if rowid == 0:
+            cursor = con.cursor()
+            cursor.execute("INSERT INTO pod VALUES ('" + localPod + "')")
+            rowid = cursor.lastrowid
+
+        con.execute("INSERT INTO federation VALUES (?, ?, ?, ?)",
+                [rowid, pod1, pod2, foundPost])
 
     localPost.delete()
     local.logout()
     remote.logout()
+    return rowid
 
 with sqlite3.connect(config['global']['database']) as con:
-    con.execute("DROP TABLE IF EXISTS federation")
-    con.execute("CREATE TABLE federation(pod1 VARCHAR(255), pod2 VARCHAR(255), success BOOLEAN)")
+    plainSQL = open("federation.sql").read()
+    con.executescript(plainSQL)
 
 for remotePod in config.sections():
     if remotePod == localPod or remotePod == "global":
         continue
 
-    sendAndVerifyPost(localPod, remotePod)
-    sendAndVerifyPost(remotePod, localPod)
+    rowid = sendAndVerifyPost(localPod, remotePod)
+    sendAndVerifyPost(remotePod, localPod, rowid=rowid)
