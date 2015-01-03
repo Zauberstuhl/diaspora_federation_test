@@ -25,7 +25,13 @@ Create the aspect name configured in `config.ini` in every account!
 Run it
 ------
 
-`python test.pl example.org`
+`python test.py example.org`
+
+The test script will also save the results to a sqlite database.  
+You can run the start script for displaying the results nicly:
+
+`python start.py`
+
 
 Example
 -------
