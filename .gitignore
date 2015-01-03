@@ -1,3 +1,4 @@
 config.ini
 federation.db
 lib/__pycache__/
+error.log

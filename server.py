@@ -13,7 +13,10 @@ if __name__ == '__main__':
     d.connect('getPod-1', '/pods/:podId', controller=pod.Pod(), action='getPod')
 
     # global config
-    #cherrypy.config.update({'environment': 'production'})
+    cherrypy.config.update({
+        'environment': 'production',
+        'log.error_file': 'error.log'
+    })
 
     conf = {'/pods' : {'request.dispatch' : d}}
     cherrypy.tree.mount(register.Register(), '/register')
