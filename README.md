@@ -8,7 +8,7 @@ The script can handle multiple diaspora pod's. Just add more to the `config.ini`
 Dependencies
 ------------
 
-`sudo pip install configparser htmltemplate cherrypy`
+`sudo pip install configparser htmltemplate cherrypy routes`
 
 `cd diaspy && sudo python setup.py install`
 
