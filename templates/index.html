@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <title node="con:pagetitle"></title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <div class="page-header">
+          Diaspora* Federation Monitor
+        </div>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="span10">
+            A rough federation test between two or more diaspora pod's<br/><br/>
+            If you want to register your own pod and receive email notification;<br/>
+            Please register your pod <a href="/register">here..</a>
+          </div>
+          <div class="span7">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr node="rep:item">
+                  <td node="con:pod1"></td>
+                  <td node="con:pod2"></td>
+                  <td node="con:result"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

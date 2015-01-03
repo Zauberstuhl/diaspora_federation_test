@@ -9,8 +9,10 @@ Dependencies
 ------------
 
 `sudo pip install configparser`
+`sudo pip install htmltemplate`
+`sudo pip install cherrypy`
 
-`sudo python setup.py install`
+`cd diaspy && sudo python setup.py install`
 
 Setup
 -----
