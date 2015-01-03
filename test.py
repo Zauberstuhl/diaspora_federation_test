@@ -4,6 +4,8 @@ import sys
 import os.path
 import diaspy
 import configparser
+import sqlite3
+
 from time import sleep
 from random import randint
 
@@ -81,9 +83,17 @@ def sendAndVerifyPost(pod1, pod2):
     else:
         print("Post not found!")
 
+    with sqlite3.connect(config['global']['database']) as con:
+        con.execute("INSERT INTO federation VALUES (?, ?, ?)",
+                [pod1, pod2, foundPost])
+
     localPost.delete()
     local.logout()
     remote.logout()
+
+with sqlite3.connect(config['global']['database']) as con:
+    con.execute("DROP TABLE IF EXISTS federation")
+    con.execute("CREATE TABLE federation(pod1 VARCHAR(255), pod2 VARCHAR(255), success BOOLEAN)")
 
 for remotePod in config.sections():
     if remotePod == localPod or remotePod == "global":

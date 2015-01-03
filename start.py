@@ -1,5 +1,8 @@
 import cherrypy
 import sqlite3
+import sys
+import os.path
+
 from htmltemplate import Template
 
 DB_STRING = "federation.db"
@@ -26,8 +29,8 @@ class Start(object):
     def index(self):
         data = []
         with sqlite3.connect(DB_STRING) as con:
-            for row in con.execute("SELECT * FROM federation ORDER BY id DESC"):
-                data.append((row[1], row[2], row[3]))
+            for row in con.execute("SELECT * FROM federation ORDER BY ROWID DESC"):
+                data.append((row[0], row[1], row[2]))
 
         template = Template(open("templates/index.html").read())
         return template.render(self.renderTemplate, 'Index', data)
@@ -46,12 +49,10 @@ class Register(object):
     index.exposed = True
 
 
-def setup_database():
-    with sqlite3.connect(DB_STRING) as con:
-        con.execute("CREATE TABLE IF NOT EXISTS federation(id int, pod1 VARCHAR(255), pod2 VARCHAR(255), success BOOLEAN)")
-
 if __name__ == '__main__':
-    cherrypy.engine.subscribe('start', setup_database)
+    if not os.path.isfile(DB_STRING):
+        print("Please run test.py-script first!")
+        sys.exit(1)
 
     cherrypy.tree.mount(Register(), '/register')
     cherrypy.tree.mount(Start())
