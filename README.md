@@ -28,7 +28,7 @@ Run it
 The test script will also save the results to a sqlite database.  
 You can run the start script for displaying the results nicly:
 
-`python start.py`
+`python server.py`
 
 
 Example
