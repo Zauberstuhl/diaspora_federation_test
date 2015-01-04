@@ -1,6 +1,6 @@
 import cherrypy
 import sys
-import os.path
+import os
 
 from lib import start, pod, register
 
@@ -18,8 +18,14 @@ if __name__ == '__main__':
         'log.error_file': 'error.log'
     })
 
-    conf = {'/pods' : {'request.dispatch' : d}}
-    cherrypy.tree.mount(register.Register(), '/register')
+    conf = {
+        '/pods' : {'request.dispatch' : d},
+        '/fonts': {
+            'tools.staticdir.on' : True,
+            'tools.staticdir.dir' : os.getcwd() + '/static/fonts'
+        }
+    }
+    #cherrypy.tree.mount(register.Register(), '/register')
     cherrypy.tree.mount(start.Start(), config=conf)
 
     cherrypy.engine.start()
