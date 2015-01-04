@@ -8,6 +8,7 @@ class Start(object):
     def renderTemplate(self, node, header, navbar, data):
         node.header = header
         node.navbar = navbar
+        node.timeout.text = str(c['global']['timeout'])
         node.item.repeat(self.renderItem, data)
 
     def renderItem(self, node, data):
