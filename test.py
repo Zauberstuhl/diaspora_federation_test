@@ -84,7 +84,7 @@ def sendAndVerifyPost(pod1, pod2):
         cursor.execute("SELECT ROWID FROM pod WHERE podName LIKE '" + pod1 + "'")
         data = cursor.fetchone()
         if data is None:
-            cursor.execute("INSERT INTO pod VALUES ('" + pod1 + "')")
+            cursor.execute("INSERT INTO pod VALUES ('" + pod1 + "', CURRENT_TIMESTAMP)")
             rowid = cursor.lastrowid
         else:
             rowid = int(data[0])
