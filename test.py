@@ -9,19 +9,14 @@ import sqlite3
 from time import sleep
 from random import randint
 
-if len(sys.argv) != 2:
-    print(sys.argv[0] + " <pod-you-want-to-test>")
-    sys.exit(1)
-
 if not os.path.isfile("config.ini"):
     print("Please create the 'config.ini' first!")
     sys.exit(1)
 
-localPod = sys.argv[1]
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-def sendAndVerifyPost(pod1, pod2, rowid=0):
+def sendAndVerifyPost(pod1, pod2):
     print("Starting with " + pod1 + " > " + pod2)
     foundPost = False
     local = diaspy.connection.Connection(
@@ -84,10 +79,15 @@ def sendAndVerifyPost(pod1, pod2, rowid=0):
         print("Post not found!")
 
     with sqlite3.connect(config['global']['database']) as con:
-        if rowid == 0:
-            cursor = con.cursor()
-            cursor.execute("INSERT INTO pod VALUES ('" + localPod + "')")
+        rowid = 0 # initialize
+        cursor = con.cursor()
+        cursor.execute("SELECT ROWID FROM pod WHERE podName LIKE '" + pod1 + "'")
+        data = cursor.fetchone()
+        if data is None:
+            cursor.execute("INSERT INTO pod VALUES ('" + pod1 + "')")
             rowid = cursor.lastrowid
+        else:
+            rowid = int(data[0])
 
         con.execute("INSERT INTO federation VALUES (?, ?, ?, ?)",
                 [rowid, pod1, pod2, foundPost])
@@ -95,16 +95,15 @@ def sendAndVerifyPost(pod1, pod2, rowid=0):
     localPost.delete()
     local.logout()
     remote.logout()
-    return rowid
 
 with sqlite3.connect(config['global']['database']) as con:
     plainSQL = open("federation.sql").read()
     con.executescript(plainSQL)
 
-rowid = 0
-for remotePod in config.sections():
-    if remotePod == localPod or remotePod == "global":
-        continue
+for localPod in config.sections():
+    if localPod == "global": continue
+    for remotePod in config.sections():
+        if remotePod == localPod or remotePod == "global":
+            continue
 
-    rowid = sendAndVerifyPost(localPod, remotePod, rowid=rowid)
-    sendAndVerifyPost(remotePod, localPod, rowid=rowid)
+        sendAndVerifyPost(localPod, remotePod)
