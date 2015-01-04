@@ -1,7 +1,8 @@
 [global]
   timeout = 60
   aspect = Testing
-  database = federation.db
+  database_scheme = federation.sql
+  database_path = federation.db
 
 [example.org]
   scheme = https
