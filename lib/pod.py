@@ -1,9 +1,11 @@
 import sqlite3
 
-from htmltemplate import Template
+from lib import tmpls
 
 class Pod(object):
-    def renderTemplate(self, node, data):
+    def renderTemplate(self, node, header, navbar, data):
+        node.header = header
+        node.navbar = navbar
         node.item.repeat(self.renderItem, data)
 
     def renderItem(self, node, data):
@@ -12,15 +14,13 @@ class Pod(object):
         node.pod2.text = pod2
         node.result.html = self.result(success)
 
-    def renderResult(self, node, success):
-        if not success:
-            node.info.atts['class'] = "glyphicons glyphicon-remove"
-
     def result(self, success):
-        template = Template(open("templates/result.html").read())
-        return template.render(self.renderResult, success)
+        attr = "remove"
+        if success: attr = "ok"
+        return "<p class=\"glyphicon glyphicon-" + attr + "\"></p>"
 
     def getPod(self, podId=None):
+        t = tmpls.Tmpls()
         data = []
         with sqlite3.connect('federation.db') as con:
             for row in con.execute("SELECT pod1, pod2, success " +
@@ -28,6 +28,5 @@ class Pod(object):
                     podId + " ORDER BY ROWID DESC"):
                 data.append((row[0], row[1], row[2]))
 
-        template = Template(open("templates/pod.html").read())
-        return template.render(self.renderTemplate, data)
+        return t.pod().render(self.renderTemplate, t.header(), t.navbar(), data)
 

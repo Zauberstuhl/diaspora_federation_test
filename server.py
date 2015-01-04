@@ -2,7 +2,7 @@ import cherrypy
 import sys
 import os
 
-from lib import start, pod, register
+from lib import start, pod
 
 if __name__ == '__main__':
     if not os.path.isfile('federation.db'):
@@ -25,7 +25,6 @@ if __name__ == '__main__':
             'tools.staticdir.dir' : os.getcwd() + '/static/fonts'
         }
     }
-    #cherrypy.tree.mount(register.Register(), '/register')
     cherrypy.tree.mount(start.Start(), config=conf)
 
     cherrypy.engine.start()

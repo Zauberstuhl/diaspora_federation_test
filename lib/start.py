@@ -1,9 +1,11 @@
 import sqlite3
 
-from htmltemplate import Template
+from lib import tmpls
 
 class Start(object):
-    def renderTemplate(self, node, data):
+    def renderTemplate(self, node, header, navbar, data):
+        node.header = header
+        node.navbar = navbar
         node.item.repeat(self.renderItem, data)
 
     def renderItem(self, node, data):
@@ -14,6 +16,7 @@ class Start(object):
         node.status.html = str(status) + "%"
 
     def index(self):
+        t = tmpls.Tmpls()
         data = []
         with sqlite3.connect('federation.db') as con:
             for row in con.execute("SELECT ROWID, podName FROM pod ORDER BY ROWID DESC"):
@@ -25,8 +28,7 @@ class Start(object):
                 percent = (successCnt / allCnt) * 100
                 data.append((row[0], row[1], percent))
 
-        template = Template(open("templates/index.html").read())
-        return template.render(self.renderTemplate, data)
+        return t.index().render(self.renderTemplate, t.header(), t.navbar(), data)
 
     index.exposed = True
 
