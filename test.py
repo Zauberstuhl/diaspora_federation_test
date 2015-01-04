@@ -101,9 +101,10 @@ with sqlite3.connect(config['global']['database']) as con:
     plainSQL = open("federation.sql").read()
     con.executescript(plainSQL)
 
+rowid = 0
 for remotePod in config.sections():
     if remotePod == localPod or remotePod == "global":
         continue
 
-    rowid = sendAndVerifyPost(localPod, remotePod)
+    rowid = sendAndVerifyPost(localPod, remotePod, rowid=rowid)
     sendAndVerifyPost(remotePod, localPod, rowid=rowid)
