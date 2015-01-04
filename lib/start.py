@@ -1,6 +1,8 @@
 import sqlite3
 
-from lib import tmpls
+from lib import tmpls, config
+
+c = config.Config().load()
 
 class Start(object):
     def renderTemplate(self, node, header, navbar, data):
@@ -20,7 +22,7 @@ class Start(object):
     def index(self):
         t = tmpls.Tmpls()
         data = []
-        with sqlite3.connect('federation.db') as con:
+        with sqlite3.connect(c['global']['database_path']) as con:
             for row in con.execute("SELECT ROWID, podName, timestamp FROM pod ORDER BY ROWID DESC"):
                 allCnt = 0
                 successCnt = 0

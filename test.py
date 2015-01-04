@@ -3,37 +3,32 @@
 import sys
 import os.path
 import diaspy
-import configparser
 import sqlite3
 
 from time import sleep
 from random import randint
+from lib import config
 
-if not os.path.isfile("config.ini"):
-    print("Please create the 'config.ini' first!")
-    sys.exit(1)
-
-config = configparser.ConfigParser()
-config.read("config.ini")
+c = config.Config().load()
 
 def sendAndVerifyPost(pod1, pod2):
     print("Starting with " + pod1 + " > " + pod2)
     foundPost = False
     local = diaspy.connection.Connection(
-            pod = config[pod1]['scheme'] + '://' + pod1,
-            username = config[pod1]['username'],
-            password = config[pod1]['password'])
+            pod = c[pod1]['scheme'] + '://' + pod1,
+            username = c[pod1]['username'],
+            password = c[pod1]['password'])
     remote = diaspy.connection.Connection(
-            pod = config[pod2]['scheme'] + '://' + pod2,
-            username = config[pod2]['username'],
-            password = config[pod2]['password'])
+            pod = c[pod2]['scheme'] + '://' + pod2,
+            username = c[pod2]['username'],
+            password = c[pod2]['password'])
 
     local.login()
     remote.login()
 
-    localAspect = diaspy.models.Aspect(local, name = config['global']['aspect'])
+    localAspect = diaspy.models.Aspect(local, name = c['global']['aspect'])
     localUser = diaspy.people.User(local,
-            handle = config[pod2]['username'] + "@" + pod2,
+            handle = c[pod2]['username'] + "@" + pod2,
             fetch='data')
     try:
         localAspect.addUser(localUser['id'])
@@ -42,9 +37,9 @@ def sendAndVerifyPost(pod1, pod2):
         if '500' in str(e):
             sys.exit(2)
 
-    remoteAspect = diaspy.models.Aspect(remote, name = config['global']['aspect'])
+    remoteAspect = diaspy.models.Aspect(remote, name = c['global']['aspect'])
     remoteUser = diaspy.people.User(remote,
-            handle = config[pod1]['username'] + "@" + pod1,
+            handle = c[pod1]['username'] + "@" + pod1,
             fetch='data')
     try:
         remoteAspect.addUser(remoteUser['id'])
@@ -58,8 +53,8 @@ def sendAndVerifyPost(pod1, pod2):
     print("[" + pod1 + "] Create post..")
     localPost = localStream.post(text="ping " + seed, aspect_ids=str(localAspect.id))
 
-    print("Wait " + config['global']['timeout'] + " seconds to synchronize..")
-    sleep(int(config['global']['timeout']))
+    print("Wait " + c['global']['timeout'] + " seconds to synchronize..")
+    sleep(int(c['global']['timeout']))
 
     print("[" + pod2 + "] Fetch stream..")
     remoteStream = diaspy.streams.Stream(remote)
@@ -78,7 +73,7 @@ def sendAndVerifyPost(pod1, pod2):
     else:
         print("Post not found!")
 
-    with sqlite3.connect(config['global']['database']) as con:
+    with sqlite3.connect(c['global']['database_path']) as con:
         rowid = 0 # initialize
         cursor = con.cursor()
         cursor.execute("SELECT ROWID FROM pod WHERE podName LIKE '" + pod1 + "'")
@@ -96,13 +91,13 @@ def sendAndVerifyPost(pod1, pod2):
     local.logout()
     remote.logout()
 
-with sqlite3.connect(config['global']['database']) as con:
-    plainSQL = open("federation.sql").read()
+with sqlite3.connect(c['global']['database_path']) as con:
+    plainSQL = open(c['global']['database_scheme']).read()
     con.executescript(plainSQL)
 
-for localPod in config.sections():
+for localPod in c.sections():
     if localPod == "global": continue
-    for remotePod in config.sections():
+    for remotePod in c.sections():
         if remotePod == localPod or remotePod == "global":
             continue
 

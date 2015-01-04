@@ -2,10 +2,12 @@ import cherrypy
 import sys
 import os
 
-from lib import start, pod
+from lib import start, pod, config
+
+c = config.Config().load()
 
 if __name__ == '__main__':
-    if not os.path.isfile('federation.db'):
+    if not os.path.isfile(c['global']['database_path']):
         print("Please run test.py-script first!")
         sys.exit(1)
 

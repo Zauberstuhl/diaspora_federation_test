@@ -1,6 +1,8 @@
 import sqlite3
 
-from lib import tmpls
+from lib import tmpls, config
+
+c = config.Config().load()
 
 class Pod(object):
     def renderTemplate(self, node, header, navbar, data):
@@ -22,7 +24,7 @@ class Pod(object):
     def getPod(self, podId=None):
         t = tmpls.Tmpls()
         data = []
-        with sqlite3.connect('federation.db') as con:
+        with sqlite3.connect(c['global']['database_path']) as con:
             for row in con.execute("SELECT pod1, pod2, success " +
                     "FROM federation WHERE podId LIKE " +
                     podId + " ORDER BY ROWID DESC"):
