@@ -101,4 +101,6 @@ for localPod in c.sections():
         if remotePod == localPod or remotePod == "global":
             continue
 
-        sendAndVerifyPost(localPod, remotePod)
+        try: sendAndVerifyPost(localPod, remotePod)
+        except diaspy.errors.StreamError as e:
+            print(e)
