@@ -9,12 +9,13 @@ class Start(object):
         node.item.repeat(self.renderItem, data)
 
     def renderItem(self, node, data):
-        podId, podName, status, timestamp = data
+        podId, podName, percent, timestamp = data
         node.timestamp.text = timestamp
         node.pod.html = "<a href=\"/pods/" + str(podId) + "\">" + podName + "</a>"
-        if status < 90:
-            status = "<span class=\"glyphicon glyphicon-warning-sign\"></span> " + str(status)
-        node.status.html = str(status) + "%"
+        status = "{0:.2f}%".format(percent)
+        if percent < 90:
+            status = "<span class=\"glyphicon glyphicon-warning-sign\"></span> " + status
+        node.status.html = status
 
     def index(self):
         t = tmpls.Tmpls()
