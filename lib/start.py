@@ -9,7 +9,9 @@ class Start(object):
     def renderItem(self, node, data):
         podId, podName, status = data
         node.pod.html = "<a href=\"/pods/" + str(podId) + "\">" + podName + "</a>"
-        node.status.text = str(status) + "%"
+        if status < 90:
+            status = "<span class=\"glyphicon glyphicon-warning-sign\"></span> " + str(status)
+        node.status.html = str(status) + "%"
 
     def index(self):
         data = []
