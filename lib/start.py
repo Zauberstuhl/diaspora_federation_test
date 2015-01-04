@@ -25,7 +25,7 @@ class Start(object):
                 successCnt = 0
                 for podRow in con.execute("SELECT success FROM federation WHERE podId LIKE " + str(row[0])):
                     allCnt += 1
-                    if row[0]: successCnt += 1
+                    if podRow[0]: successCnt += 1
                 percent = (successCnt / allCnt) * 100
                 data.append((row[0], row[1], percent, row[2]))
 
